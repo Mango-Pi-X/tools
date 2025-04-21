@@ -101,8 +101,7 @@
             });
         };
 
-        let code = "<h1> Made By Cassius! </h1>
-            <p>Edit HTML5</p>";
+        let code = "";
         run();
 
         document.getElementById("openWebsite").addEventListener("keypress", function(event) {
@@ -141,22 +140,15 @@
             }
         });
 
-       document.getElementById("scrabble").addEventListener("input", function() {
-    let word = this.value;
-    fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
-        .then(response => response.json())
-        .then(data => {
-            let isValid = data.title !== "No Definitions Found";
-            this.style.backgroundColor = isValid ? "green" : "red";
-
-            // Reset color after 3 seconds
-            setTimeout(() => {
-                this.style.backgroundColor = ""; // Reset to default
-            }, 3000);
-        })
-        .catch(console.error);
-});
-
+        document.getElementById("scrabble").addEventListener("input", function() {
+            let word = this.value;
+            fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
+                .then(response => response.json())
+                .then(data => {
+                    this.style.backgroundColor = data.title === "No Definitions Found" ? "red" : "green";
+                })
+                .catch(console.error);
+        });
 
         let timerInterval;
         document.getElementById("timerInput").addEventListener("keypress", function(event) {
