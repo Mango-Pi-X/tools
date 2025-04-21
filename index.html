@@ -84,6 +84,7 @@
 
         <div id="container"></div>
     </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
     <script>
@@ -108,15 +109,16 @@
                 let url = this.value.trim();
                 if (url && !url.startsWith("http")) url = "https://" + url;
                 if (url) {
-                    let newWindow = window.open("about:blank", "_blank");
-                    newWindow.document.write(`
-                        <html>
-                        <head><title>${url}</title></head>
-                        <body style="margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;">
-                            <iframe src="${url}" style="width: 100vw; height: 100vh; border: none;"></iframe>
-                        </body>
-                        </html>
-                    `);
+                    var win = window.open();
+                    win.document.body.style.margin = '0';
+                    win.document.body.style.height = '100vh';
+                    var iframe = win.document.createElement('iframe');
+                    iframe.style.border = 'none';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.margin = '0';
+                    iframe.src = url;
+                    win.document.body.appendChild(iframe);
                 }
             }
         });
