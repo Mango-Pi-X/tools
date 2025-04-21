@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enable JavaScript!</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80vw;
+        }
+
+        .widget-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .widget {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #202124;
+            background: white;
+            border: 1px solid #dfe1e5;
+            transition: box-shadow 0.2s ease-in-out;
+        }
+
+        .widget:hover {
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-box {
+            text-align: center;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            outline: none;
+            background-color: #ffffff;
+            color: #202124;
+        }
+
+        .search-box:focus {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #container {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid grey;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout">
+        <div class="widget-container">
+            <div class="widget" id="ip">Fetching IP...</div>
+            <div class="widget"><input type="color" id="colorPicker"></div>
+            <input type="text" id="searchQuery" class="search-box widget" placeholder="Search Google..." required>
+            <input type="text" id="scrabble" class="search-box widget" placeholder="Is it a scrabble word?" required>
+            <input type="text" id="timerInput" class="search-box widget" placeholder="Timer (seconds)" required>
+            <input type="text" id="openWebsite" class="search-box widget" placeholder="about:blank" required>
+        </div>
+
+        <div id="container"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+    <script>
+        let run = () => {
+            require.config({
+                paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+            });
+            require(["vs/editor/editor.main"], function () {
+                var editor = monaco.editor.create(document.getElementById("container"), {
+                    value: code,
+                    language: "html",
+                    automaticLayout: true
+                });
+            });
+        };
+
+        let code = "";
+        run();
+
+        document.getElementById("openWebsite").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                let url = this.value.trim();
+                if (url && !url.startsWith("http")) url = "https://" + url;
+                if (url) {
+                    let newWindow = window.open("about:blank", "_blank");
+                    newWindow.document.write(`
+                        <html>
+                        <head><title>${url}</title></head>
+                        <body style="margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;">
+                            <iframe src="${url}" style="width: 100vw; height: 100vh; border: none;"></iframe>
+                        </body>
+                        </html>
+                    `);
+                }
+            }
+        });
+
+        function updateTitleWithTime() {
+            document.title = new Date().toLocaleTimeString();
+        }
+        setInterval(updateTitleWithTime, 1000);
+
+        fetch("https://api.ipify.org/?format=json")
+            .then(response => response.json())
+            .then(data => { document.getElementById("ip").innerText = "IP: " + data.ip; })
+            .catch(console.error);
+
+        document.getElementById("searchQuery").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                let query = this.value;
+                if (query) window.location.href = "https://www.google.com/search?q=" + encodeURIComponent(query);
+            }
+        });
+
+        document.getElementById("scrabble").addEventListener("input", function() {
+            let word = this.value;
+            fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
+                .then(response => response.json())
+                .then(data => {
+                    this.style.backgroundColor = data.title === "No Definitions Found" ? "red" : "green";
+                })
+                .catch(console.error);
+        });
+
+        let timerInterval;
+        document.getElementById("timerInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                clearInterval(timerInterval);
+                let timeLeft = parseInt(this.value, 10);
+                if (isNaN(timeLeft) || timeLeft <= 0) {
+                    this.value = "Invalid time!";
+                    return;
+                }
+
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        this.value = timeLeft--;
+                    } else {
+                        clearInterval(timerInterval);
+                        this.value = "Time's up!";
+                        setTimeout(() => { this.value = ""; }, 2000);
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+
+</body>
+</html>
