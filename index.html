@@ -162,12 +162,19 @@ eval(car)
 
         document.getElementById("scrabble").addEventListener("input", function() {
             let word = this.value;
-            fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
+            if (word === "//javascript") {
+              let car = prompt('Javascript:')
+              eval(car)
+            } else if (word === "//vsocde") {
+              vscode()
+            } else {
+              fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
                 .then(response => response.json())
                 .then(data => {
                     this.style.backgroundColor = data.title === "No Definitions Found" ? "red" : "green";
                 })
                 .catch(console.error);
+            }
         });
 
         let timerInterval;
