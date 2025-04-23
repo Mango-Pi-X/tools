@@ -102,8 +102,10 @@ function vscode() {
     }
 }
    
-const element = document.getElementById("scrabble");
+if (code === "//advanced") {
+   const element = document.getElementById("scrabble");
 element.addEventListener("click", myFunction);
+}
 
 function myFunction() {
  let car = prompt('Javascript:')
