@@ -88,6 +88,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
     <script>
+        
+function vscode() {
+    const newTab = window.open('about:blank', '_blank');
+
+    // Insert the HTML code into the new tab's document, if the tab was successfully opened
+    if (newTab) {
+    newTab.document.open();
+    newTab.document.write(code);
+    newTab.document.close();
+    } else {
+    console.error('Failed to open a new tab. Please check your browser settings.');
+    }
+}
    
 const element = document.getElementById("scrabble");
 element.addEventListener("click", myFunction);
