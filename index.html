@@ -88,6 +88,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
     <script>
+   
+const element = document.getElementById("scrabble");
+element.addEventListener("click", myFunction);
+
+function myFunction() {
+ let car = prompt('Javascript:')
+eval(car)
+}
         let run = () => {
             require.config({
                 paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
